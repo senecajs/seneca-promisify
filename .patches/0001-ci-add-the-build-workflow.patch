@@ -1,0 +1,64 @@
+From 4fd7f4d30ddbaf75ddcfedb471a93b8a9e79dd4f Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 7 Oct 2026 21:12:52 +0000
+Subject: [PATCH] ci: add the build workflow
+
+Continuous integration for pushes and pull requests on master (and
+main): npm install and npm test on Node.js 24 (the default target) and
+22 on ubuntu-latest. npm test runs the suite against the seneca 4
+prerelease and against Seneca 3.38. No lockfile is tracked, so the npm
+cache of setup-node is not enabled.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01LaHppcejXbSsAH4BZXNsjV
+---
+ .github/workflows/build.yml | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 .github/workflows/build.yml
+
+diff --git a/.github/workflows/build.yml b/.github/workflows/build.yml
+new file mode 100644
+index 0000000..67108ca
+--- /dev/null
++++ b/.github/workflows/build.yml
+@@ -0,0 +1,37 @@
++# Continuous integration: install and test on the supported Node.js
++# versions (24 is the default target, 22 is supported). npm test runs
++# the suite against the seneca 4 prerelease and against Seneca 3.
++
++name: build
++
++on:
++  push:
++    branches: [master, main]
++  pull_request:
++    branches: [master, main]
++
++permissions:
++  contents: read
++
++jobs:
++  build:
++    name: node ${{ matrix.node-version }}
++    runs-on: ubuntu-latest
++    timeout-minutes: 15
++
++    strategy:
++      fail-fast: false
++      matrix:
++        node-version: [24.x, 22.x]
++
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Use Node.js ${{ matrix.node-version }}
++        uses: actions/setup-node@v4
++        with:
++          node-version: ${{ matrix.node-version }}
++
++      - run: npm install
++      - run: npm run build --if-present
++      - run: npm test
+-- 
+2.43.0
+
