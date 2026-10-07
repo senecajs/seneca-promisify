@@ -28,7 +28,8 @@
     "README.md",
     "CHANGES.md",
     "promisify.js",
-    "lib/errors.js"
+    "lib/errors.js",
+    "docs"
   ],
   "engines": {
     "node": ">=18"
